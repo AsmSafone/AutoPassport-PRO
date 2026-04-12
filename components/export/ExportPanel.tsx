@@ -11,7 +11,6 @@ import {
   exportA4Print,
   exportBatchZip,
 } from '@/lib/exportUtils';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -55,6 +54,9 @@ export default function ExportPanel({
   const [success, setSuccess] = useState<ExportOption | null>(null);
 
   const activePhoto = photos[0];
+
+  const maxCols = Math.max(1, Math.floor((210 - customSpacing) / (preset.widthMm + customSpacing)));
+  const maxRows = Math.max(1, Math.floor((297 - customSpacing) / (preset.heightMm + customSpacing)));
 
   const handleExport = async (type: ExportOption) => {
     if (!photos.length || loading) return;
@@ -100,7 +102,7 @@ export default function ExportPanel({
       id: 'a4-pdf' as ExportOption,
       icon: <Printer className="h-4 w-4" />,
       label: 'Print-Ready PDF',
-      description: `A4 sheet with ${layout?.totalPhotos ?? '—'} photos at 300 DPI`,
+      description: `A4 sheet with ${layout?.totalPhotos ?? '—'} photos`,
       primary: true,
       disabled: !layout,
     },
@@ -176,19 +178,31 @@ export default function ExportPanel({
                 <Label className="text-[11px] font-semibold text-muted-foreground uppercase">Columns</Label>
                 <Input
                   type="number"
-                  value={customCols ?? layout.columns}
-                  onChange={(e) => setCustomCols(parseInt(e.target.value) || 1)}
+                  value={Math.min(customCols ?? layout.columns, maxCols)}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 1;
+                    setCustomCols(Math.min(val, maxCols));
+                  }}
                   className="h-8 text-xs"
+                  max={maxCols}
+                  min={1}
                 />
+                <p className="text-[9px] text-muted-foreground mt-0.5">Max: {maxCols}</p>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[11px] font-semibold text-muted-foreground uppercase">Rows</Label>
                 <Input
                   type="number"
-                  value={customRows ?? layout.rows}
-                  onChange={(e) => setCustomRows(parseInt(e.target.value) || 1)}
+                  value={Math.min(customRows ?? layout.rows, maxRows)}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 1;
+                    setCustomRows(Math.min(val, maxRows));
+                  }}
                   className="h-8 text-xs"
+                  max={maxRows}
+                  min={1}
                 />
+                <p className="text-[9px] text-muted-foreground mt-0.5">Max: {maxRows}</p>
               </div>
             </div>
 
@@ -199,8 +213,22 @@ export default function ExportPanel({
               </div>
               <Slider
                 value={[customSpacing]}
-                onValueChange={(vals) => setCustomSpacing(vals[0])}
+                onValueChange={(vals) => {
+                  const newSpacing = vals[0];
+                  setCustomSpacing(newSpacing);
+                  
+                  // Auto-clamp existing manual settings if they no longer fit
+                  if (customCols) {
+                    const newMaxCols = Math.max(1, Math.floor((210 - newSpacing) / (preset.widthMm + newSpacing)));
+                    if (customCols > newMaxCols) setCustomCols(newMaxCols);
+                  }
+                  if (customRows) {
+                    const newMaxRows = Math.max(1, Math.floor((297 - newSpacing) / (preset.heightMm + newSpacing)));
+                    if (customRows > newMaxRows) setCustomRows(newMaxRows);
+                  }
+                }}
                 max={20}
+                min={0}
                 step={0.5}
                 className="py-1"
               />
@@ -210,7 +238,7 @@ export default function ExportPanel({
               onClick={() => {
                 setCustomCols(undefined);
                 setCustomRows(undefined);
-                setCustomSpacing(2);
+                setCustomSpacing(4);
               }}
               className="text-[10px] text-blue-600 hover:underline font-medium"
             >

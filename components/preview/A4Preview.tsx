@@ -39,7 +39,7 @@ export default function A4Preview({
     setIsRendering(true);
 
     try {
-      const newLayout = calculateLayout(preset, undefined, gutterMm, manualCols, manualRows);
+      const newLayout = calculateLayout(preset, gutterMm, gutterMm, manualCols, manualRows);
       
       // Only notify parent if the layout structure has changed to avoid infinite loops
       const layoutKey = `${newLayout.columns}-${newLayout.rows}-${newLayout.photoWidthPx}-${newLayout.photoHeightPx}-${newLayout.gutterPx}`;

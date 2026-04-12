@@ -36,7 +36,7 @@ export default function Home() {
   const [showGuides, setShowGuides] = useState(true);
   const [customRows, setCustomRows] = useState<number | undefined>(undefined);
   const [customCols, setCustomCols] = useState<number | undefined>(undefined);
-  const [customSpacing, setCustomSpacing] = useState<number>(3); // Set default to 3mm
+  const [customSpacing, setCustomSpacing] = useState<number>(4); // Set default to 4mm
   const [showExport, setShowExport] = useState(true); // Control export panel visibility
 
   const processor = usePhotoProcessor();
