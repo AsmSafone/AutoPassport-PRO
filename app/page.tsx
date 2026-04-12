@@ -13,8 +13,8 @@ import InteractiveCropDialog from '@/components/preview/InteractiveCropDialog';
 import ExportPanel from '@/components/export/ExportPanel';
 import ManualOverridePanel from '@/components/settings/ManualOverridePanel';
 import { usePhotoProcessor } from '@/hooks/usePhotoProcessor';
-import { COUNTRY_PRESETS, getPresetById } from '@/lib/presets';
-import { CountryPreset, ManualAdjustments } from '@/lib/types';
+import { COUNTRY_PRESETS, getPresetById, PAPER_SIZES } from '@/lib/presets';
+import { CountryPreset, ManualAdjustments, PaperSize, ProcessedPhoto } from '@/lib/types';
 import { LayoutGrid } from '@/lib/layoutGenerator';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,8 +36,9 @@ export default function Home() {
   const [showGuides, setShowGuides] = useState(true);
   const [customRows, setCustomRows] = useState<number | undefined>(undefined);
   const [customCols, setCustomCols] = useState<number | undefined>(undefined);
-  const [customSpacing, setCustomSpacing] = useState<number>(4); // Set default to 4mm
-  const [showExport, setShowExport] = useState(true); // Control export panel visibility
+  const [customSpacing, setCustomSpacing] = useState<number>(4);
+  const [paperId, setPaperId] = useState('a4');
+  const [showExport, setShowExport] = useState(true);
 
   const processor = usePhotoProcessor();
 
@@ -46,6 +47,11 @@ export default function Home() {
       ? ({ ...COUNTRY_PRESETS.find((p) => p.id === 'custom')!, ...customPreset } as CountryPreset)
       : getPresetById(presetId);
   }, [presetId, customPreset]);
+
+  const paper = useMemo(() =>
+    PAPER_SIZES.find(p => p.id === paperId) || PAPER_SIZES[0],
+    [paperId]
+  );
 
   const handleFilesSelected = useCallback((files: File[], append: boolean = true) => {
     if (append) {
@@ -97,7 +103,7 @@ export default function Home() {
   }, []);
   const handleReprocess = useCallback(async () => {
     if (activeEditId) {
-      const photo = processor.photos.find((p: any) => p.id === activeEditId);
+      const photo = processor.photos.find((p: ProcessedPhoto) => p.id === activeEditId);
       if (photo) {
         await processor.reprocessPhoto(photo, manualAdjustments, presetId);
       }
@@ -121,7 +127,7 @@ export default function Home() {
   }, [manualAdjustments, step]); // Removed handleReprocess to break the feedback loop
 
 
-  const successCount = processor.photos.filter((p: any) => p.processedUrl).length;
+  const successCount = processor.photos.filter((p: ProcessedPhoto) => p.processedUrl).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -231,7 +237,7 @@ export default function Home() {
                 <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-sm">
                   {[
                     { id: 'photos', label: 'Individual Photos', icon: <Images className="h-3.5 w-3.5" /> },
-                    { id: 'a4', label: 'A4 Print Layout', icon: <LayoutTemplate className="h-3.5 w-3.5" /> },
+                    { id: 'a4', label: 'Print Layout', icon: <LayoutTemplate className="h-3.5 w-3.5" /> },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -289,8 +295,9 @@ export default function Home() {
                 {activeTab === 'a4' && (
                   <div className="animate-fade-in">
                     <A4Preview
-                      photos={processor.photos.filter((p: any) => p.processedUrl)}
+                      photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
                       preset={effectivePreset}
+                      paper={paper}
                       mixMultiple={mixMultiple}
                       showGuides={showGuides}
                       manualRows={customRows}
@@ -377,8 +384,10 @@ export default function Home() {
                 {showExport && (
                   <div className="animate-fade-up">
                     <ExportPanel
-                      photos={processor.photos.filter((p: any) => p.processedUrl)}
+                      photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
                       preset={effectivePreset}
+                      paper={paper}
+                      onPaperChange={setPaperId}
                       layout={layout}
                       mixMultiple={mixMultiple}
                       setMixMultiple={setMixMultiple}

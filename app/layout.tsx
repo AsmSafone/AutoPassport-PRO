@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     default: 'AutoPassport PRO — AI Passport Photo Generator',
     template: '%s | AutoPassport PRO'
   },
-  description: 'Generate perfect biometrically-compliant passport photos in seconds. Professional AI background removal, auto-cropping, and multi-country presets with A4 print layout.',
+  description: 'Generate perfect biometrically-compliant passport photos in seconds. Professional AI background removal, auto-cropping, and multi-country presets with various print layout.',
   keywords: ['passport photo generator', 'biometric photo', 'visa photo maker', 'AI background removal', 'automatic passport photo', 'passport photo print layout', 'online passport photo maker'],
   authors: [{ name: 'Safone', url: 'https://safone.dev' }],
   creator: 'Safone',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'AutoPassport PRO — AI Passport Photo Generator',
-    description: 'Professional AI-powered passport photos in seconds. Auto-crop, BG remove, and A4 print sheets.',
+    description: 'Professional AI-powered passport photos in seconds. Auto-crop, BG remove, and various print sheets.',
     url: 'https://autopassport.pro.bd',
     siteName: 'AutoPassport PRO',
     images: [

@@ -14,6 +14,13 @@ export interface CountryPreset {
   notes?: string;
 }
 
+export interface PaperSize {
+  id: string;
+  name: string;
+  widthMm: number;
+  heightMm: number;
+}
+
 export type ProcessingStatus =
   | 'idle'
   | 'cropping'

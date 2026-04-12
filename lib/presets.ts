@@ -1,4 +1,4 @@
-import { CountryPreset } from './types';
+import { CountryPreset, PaperSize } from './types';
 
 export const COUNTRY_PRESETS: CountryPreset[] = [
   {
@@ -134,3 +134,10 @@ export const A4_CONFIG = {
   marginMm: 10,
   gutterMm: 3,
 };
+
+export const PAPER_SIZES: PaperSize[] = [
+  { id: 'a4', name: 'A4 (210×297mm)', widthMm: 210, heightMm: 297 },
+  { id: 'letter', name: 'Letter (8.5×11")', widthMm: 215.9, heightMm: 279.4 },
+  { id: '4x6', name: '4×6" (10×15cm)', widthMm: 101.6, heightMm: 152.4 },
+  { id: '5x7', name: '5×7" (13×18cm)', widthMm: 127.0, heightMm: 177.8 },
+];

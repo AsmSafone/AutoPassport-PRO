@@ -1,4 +1,4 @@
-import { A4LayoutConfig, ProcessedPhoto, CountryPreset } from './types';
+import { ProcessedPhoto, CountryPreset, PaperSize } from './types';
 import { A4_CONFIG, mmToPx } from './presets';
 
 export interface LayoutGrid {
@@ -9,8 +9,8 @@ export interface LayoutGrid {
   photoHeightPx: number;
   marginPx: number;
   gutterPx: number;
-  a4WidthPx: number;
-  a4HeightPx: number;
+  paperWidthPx: number;
+  paperHeightPx: number;
   positions: Array<{ x: number; y: number; photoIndex: number }>;
 }
 
@@ -19,19 +19,23 @@ export function calculateLayout(
   marginMm: number = A4_CONFIG.marginMm,
   gutterMm: number = A4_CONFIG.gutterMm,
   manualColumns?: number,
-  manualRows?: number
+  manualRows?: number,
+  paper?: PaperSize
 ): LayoutGrid {
   const dpi = 300;
-  const a4W = mmToPx(A4_CONFIG.widthMm, dpi);
-  const a4H = mmToPx(A4_CONFIG.heightMm, dpi);
+  const pW = paper?.widthMm ?? A4_CONFIG.widthMm;
+  const pH = paper?.heightMm ?? A4_CONFIG.heightMm;
+  
+  const pWidthPx = mmToPx(pW, dpi);
+  const pHeightPx = mmToPx(pH, dpi);
   const margin = mmToPx(marginMm, dpi);
   const gutter = mmToPx(gutterMm, dpi);
 
   const photoW = mmToPx(preset.widthMm, dpi);
   const photoH = mmToPx(preset.heightMm, dpi);
 
-  const usableW = a4W - 2 * margin;
-  const usableH = a4H - 2 * margin;
+  const usableW = pWidthPx - 2 * margin;
+  const usableH = pHeightPx - 2 * margin;
 
   const columns = manualColumns ?? Math.floor((usableW + gutter) / (photoW + gutter));
   const rows = manualRows ?? Math.floor((usableH + gutter) / (photoH + gutter));
@@ -56,21 +60,21 @@ export function calculateLayout(
     photoHeightPx: photoH,
     marginPx: margin,
     gutterPx: gutter,
-    a4WidthPx: a4W,
-    a4HeightPx: a4H,
+    paperWidthPx: pWidthPx,
+    paperHeightPx: pHeightPx,
     positions,
   };
 }
 
-export async function renderA4Canvas(
+export async function renderPaperCanvas(
   layout: LayoutGrid,
   photos: ProcessedPhoto[],
   mixMultiple: boolean = false,
   showGuides: boolean = true
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
-  canvas.width = layout.a4WidthPx;
-  canvas.height = layout.a4HeightPx;
+  canvas.width = layout.paperWidthPx;
+  canvas.height = layout.paperHeightPx;
   const ctx = canvas.getContext('2d')!;
 
   ctx.fillStyle = '#FFFFFF';
@@ -114,21 +118,19 @@ export async function renderA4Canvas(
   }
 
   if (showGuides) {
-    ctx.strokeStyle = '#CCCCCC'; // Subtle gray for cutting
-    ctx.lineWidth = 0.5;
-    ctx.setLineDash([3, 3]);
+    ctx.strokeStyle = '#999999'; // Darker gray for better visibility
+    ctx.lineWidth = 1.0; // Thicker lines
+    ctx.setLineDash([4, 4]); // Slightly longer dashes
 
     const photoW = layout.photoWidthPx;
     const photoH = layout.photoHeightPx;
     const gutter = layout.gutterPx;
     
-    // Calculate actual bounds of the grid
     const gridWidth = layout.columns * photoW + (layout.columns - 1) * gutter;
     const gridHeight = layout.rows * photoH + (layout.rows - 1) * gutter;
     const xEnd = layout.marginPx + gridWidth;
     const yEnd = layout.marginPx + gridHeight;
 
-    // Vertical guides (in gutters)
     for (let c = 0; c < layout.columns - 1; c++) {
       const x = layout.marginPx + (c + 1) * photoW + c * gutter + gutter / 2;
       ctx.beginPath();
@@ -137,7 +139,6 @@ export async function renderA4Canvas(
       ctx.stroke();
     }
 
-    // Horizontal guides (in gutters)
     for (let r = 0; r < layout.rows - 1; r++) {
       const y = layout.marginPx + (r + 1) * photoH + r * gutter + gutter / 2;
       ctx.beginPath();
@@ -146,8 +147,7 @@ export async function renderA4Canvas(
       ctx.stroke();
     }
 
-    // Border guide (restricted to occupied grid)
-    ctx.setLineDash([8, 8]);
+    ctx.setLineDash([10, 5]);
     ctx.strokeRect(layout.marginPx, layout.marginPx, gridWidth, gridHeight);
     ctx.setLineDash([]);
   }

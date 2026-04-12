@@ -1,5 +1,5 @@
-import { ProcessedPhoto, DownloadHistoryItem, CountryPreset } from './types';
-import { LayoutGrid, renderA4Canvas } from './layoutGenerator';
+import { ProcessedPhoto, CountryPreset, PaperSize } from './types';
+import { LayoutGrid, renderPaperCanvas } from './layoutGenerator';
 
 export function downloadDataUrl(dataUrl: string, filename: string): void {
   const a = document.createElement('a');
@@ -10,74 +10,70 @@ export function downloadDataUrl(dataUrl: string, filename: string): void {
   document.body.removeChild(a);
 }
 
-export async function exportPhotoPng(
-  photo: ProcessedPhoto,
-  filename?: string
-): Promise<void> {
+export async function exportPhotoPng(photo: ProcessedPhoto, filename?: string): Promise<void> {
   const name = filename || `passport-photo-${photo.id}.png`;
   downloadDataUrl(photo.processedUrl, name);
 }
 
-export async function exportA4Pdf(
+export async function exportPaperPdf(
   layout: LayoutGrid,
   photos: ProcessedPhoto[],
   preset: CountryPreset,
+  paper: PaperSize,
   mixMultiple: boolean = false,
   showGuides: boolean = false
 ): Promise<void> {
   const { jsPDF } = await import('jspdf');
-
-  const canvas = await renderA4Canvas(layout, photos, mixMultiple, showGuides);
+  const canvas = await renderPaperCanvas(layout, photos, mixMultiple, showGuides);
   const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
   const pdf = new jsPDF({
-    orientation: 'portrait',
+    orientation: layout.paperWidthPx > layout.paperHeightPx ? 'landscape' : 'portrait',
     unit: 'mm',
-    format: 'a4',
+    format: [paper.widthMm, paper.heightMm],
   });
 
-  pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-  pdf.save(`passport-photos-a4-${preset.id}-${Date.now()}.pdf`);
+  pdf.addImage(imgData, 'JPEG', 0, 0, paper.widthMm, paper.heightMm);
+  pdf.save(`passport-photos-${paper.id}-${preset.id}-${Date.now()}.pdf`);
 }
 
-export async function exportA4Png(
+export async function exportPaperPng(
   layout: LayoutGrid,
   photos: ProcessedPhoto[],
+  paper: PaperSize,
   mixMultiple: boolean = false,
   showGuides: boolean = false
 ): Promise<void> {
-  const canvas = await renderA4Canvas(layout, photos, mixMultiple, showGuides);
+  const canvas = await renderPaperCanvas(layout, photos, mixMultiple, showGuides);
   const dataUrl = canvas.toDataURL('image/png', 1.0);
-  downloadDataUrl(dataUrl, `passport-photos-a4-${Date.now()}.png`);
+  downloadDataUrl(dataUrl, `passport-photos-${paper.id}-${Date.now()}.png`);
 }
 
-export async function exportA4Print(
+export async function exportPaperPrint(
   layout: LayoutGrid,
   photos: ProcessedPhoto[],
+  paper: PaperSize,
   mixMultiple: boolean = false,
   showGuides: boolean = false
 ): Promise<void> {
-  const canvas = await renderA4Canvas(layout, photos, mixMultiple, showGuides);
+  const canvas = await renderPaperCanvas(layout, photos, mixMultiple, showGuides);
   const dataUrl = canvas.toDataURL('image/png', 1.0);
   
   const iframe = document.createElement('iframe');
   iframe.style.visibility = 'hidden';
   iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
   iframe.style.width = '0';
   iframe.style.height = '0';
   iframe.style.border = '0';
   
   document.body.appendChild(iframe);
-  
   const doc = iframe.contentWindow?.document;
   if (doc) {
     doc.write(`
       <html>
         <head>
           <style>
-            @page { size: A4; margin: 0; }
+            @page { size: ${paper.widthMm}mm ${paper.heightMm}mm; margin: 0; }
             body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; }
             img { width: 100%; height: auto; display: block; }
           </style>
@@ -88,17 +84,9 @@ export async function exportA4Print(
       </html>
     `);
     doc.close();
-    
-    // Cleanup after printing
-    const cleanup = () => {
-      document.body.removeChild(iframe);
-    };
-    
+    const cleanup = () => { if (document.body.contains(iframe)) document.body.removeChild(iframe); };
     iframe.contentWindow?.addEventListener('afterprint', cleanup);
-    // Safety cleanup if afterprint doesn't fire
-    setTimeout(() => {
-      if (document.body.contains(iframe)) cleanup();
-    }, 60000);
+    setTimeout(cleanup, 60000);
   }
 }
 
@@ -109,4 +97,3 @@ export async function exportBatchZip(photos: ProcessedPhoto[]): Promise<void> {
     downloadDataUrl(photo.processedUrl, `passport-photo-${i + 1}.png`);
   }
 }
-
