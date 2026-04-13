@@ -15,7 +15,7 @@ import ManualOverridePanel from '@/components/settings/ManualOverridePanel';
 import { usePhotoProcessor } from '@/hooks/usePhotoProcessor';
 import { COUNTRY_PRESETS, getPresetById, PAPER_SIZES } from '@/lib/presets';
 import { CountryPreset, ManualAdjustments, PaperSize, ProcessedPhoto } from '@/lib/types';
-import { LayoutGrid } from '@/lib/layoutGenerator';
+import { LayoutGrid, calculateLayout } from '@/lib/layoutGenerator';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -29,10 +29,9 @@ export default function Home() {
   const [showManualOverride, setShowManualOverride] = useState(false);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
   const [manualAdjustments, setManualAdjustments] = useState<Partial<ManualAdjustments>>({});
-  const [layout, setLayout] = useState<LayoutGrid | null>(null);
   const [activeTab, setActiveTab] = useState<'photos' | 'a4'>('photos');
   const [showInteractiveCrop, setShowInteractiveCrop] = useState(false);
-  const [mixMultiple, setMixMultiple] = useState(false);
+  const [mixMultiple, setMixMultiple] = useState(true);
   const [showGuides, setShowGuides] = useState(true);
   const [customRows, setCustomRows] = useState<number | undefined>(undefined);
   const [customCols, setCustomCols] = useState<number | undefined>(undefined);
@@ -53,6 +52,10 @@ export default function Home() {
     [paperId]
   );
 
+  const layout = useMemo(() => {
+    return calculateLayout(effectivePreset, customSpacing, customSpacing, customCols, customRows, paper);
+  }, [effectivePreset, customSpacing, customCols, customRows, paper]);
+
   const handleFilesSelected = useCallback((files: File[], append: boolean = true) => {
     if (append) {
       setSelectedFiles((prev) => [...prev, ...files]);
@@ -72,7 +75,6 @@ export default function Home() {
     processor.reset();
     setStep('upload');
     setSelectedFiles([]);
-    setLayout(null);
     setShowManualOverride(false);
     setActiveEditId(null);
   }, [processor]);
@@ -298,12 +300,10 @@ export default function Home() {
                       photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
                       preset={effectivePreset}
                       paper={paper}
+                      layout={layout}
                       mixMultiple={mixMultiple}
                       showGuides={showGuides}
-                      manualRows={customRows}
-                      manualCols={customCols}
                       gutterMm={customSpacing}
-                      onLayoutReady={setLayout}
                     />
                   </div>
                 )}

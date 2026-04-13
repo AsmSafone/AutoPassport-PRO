@@ -3,54 +3,37 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { ProcessedPhoto, CountryPreset, PaperSize } from '@/lib/types';
-import { calculateLayout, renderPaperCanvas, LayoutGrid } from '@/lib/layoutGenerator';
+import { renderPaperCanvas, LayoutGrid } from '@/lib/layoutGenerator';
 
 interface A4PreviewProps {
   photos: ProcessedPhoto[];
   preset: CountryPreset;
   paper: PaperSize;
+  layout: LayoutGrid;
   mixMultiple?: boolean;
   showGuides?: boolean;
-  manualRows?: number;
-  manualCols?: number;
   gutterMm?: number;
-  onLayoutReady?: (layout: LayoutGrid) => void;
 }
 
 export default function A4Preview({
   photos,
   preset,
   paper,
+  layout,
   mixMultiple = false,
   showGuides = true,
-  manualRows,
-  manualCols,
-  gutterMm,
-  onLayoutReady,
 }: A4PreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [layout, setLayout] = useState<LayoutGrid | null>(null);
   const [isRendering, setIsRendering] = useState(false);
   const [scale, setScale] = useState(1);
-  const lastLayoutRef = useRef<string>('');
 
   const render = useCallback(async () => {
-    if (!photos.length) return;
+    if (!photos.length || !layout) return;
     setIsRendering(true);
 
     try {
-      const newLayout = calculateLayout(preset, gutterMm, gutterMm, manualCols, manualRows, paper);
-      const layoutKey = `${newLayout.columns}-${newLayout.rows}-${newLayout.photoWidthPx}-${newLayout.photoHeightPx}-${newLayout.gutterPx}-${paper.id}`;
-      if (layoutKey !== lastLayoutRef.current) {
-        lastLayoutRef.current = layoutKey;
-        setLayout(newLayout);
-        onLayoutReady?.(newLayout);
-      } else if (!layout) {
-        setLayout(newLayout);
-      }
-
-      const canvas = await renderPaperCanvas(newLayout, photos, mixMultiple, showGuides);
+      const canvas = await renderPaperCanvas(layout, photos, mixMultiple, showGuides);
       if (canvasRef.current) {
         const ctx = canvasRef.current.getContext('2d')!;
         canvasRef.current.width = canvas.width;
@@ -66,7 +49,7 @@ export default function A4Preview({
     } finally {
       setIsRendering(false);
     }
-  }, [photos, preset, paper, mixMultiple, showGuides, onLayoutReady, manualRows, manualCols, gutterMm]);
+  }, [photos, layout, mixMultiple, showGuides]);
 
   useEffect(() => { render(); }, [render]);
   useEffect(() => {
@@ -96,13 +79,11 @@ export default function A4Preview({
       <div className="mx-auto overflow-hidden rounded-xl shadow-2xl border bg-white" style={{ width: canvasW * scale || '100%', height: canvasH * scale || 'auto' }}>
         <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
       </div>
-      {layout && (
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span>{layout.columns}×{layout.rows} grid</span>
-          <span>{layout.totalPhotos} photos</span>
-          <span>{paper.name}</span>
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        <span>{layout.columns}×{layout.rows} grid</span>
+        <span>{layout.totalPhotos} photos</span>
+        <span>{paper.name}</span>
+      </div>
     </div>
   );
 }

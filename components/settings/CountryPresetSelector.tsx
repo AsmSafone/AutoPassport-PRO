@@ -91,7 +91,7 @@ export default function CountryPresetSelector({
               <Label className="text-xs">Width (mm)</Label>
               <Input
                 type="number"
-                value={customPreset.widthMm ?? 35}
+                value={customPreset.widthMm ?? 45}
                 onChange={(e) => onCustomChange({ ...customPreset, widthMm: Number(e.target.value) })}
                 className="mt-1 h-8 text-xs"
                 min={10}
@@ -102,7 +102,7 @@ export default function CountryPresetSelector({
               <Label className="text-xs">Height (mm)</Label>
               <Input
                 type="number"
-                value={customPreset.heightMm ?? 45}
+                value={customPreset.heightMm ?? 55}
                 onChange={(e) => onCustomChange({ ...customPreset, heightMm: Number(e.target.value) })}
                 className="mt-1 h-8 text-xs"
                 min={10}
