@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { CircleCheck as CheckCircle2, TriangleAlert as AlertTriangle, Circle as XCircle, Trash2, Settings, ArrowLeftRight, Scissors } from 'lucide-react';
 import { ProcessedPhoto } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -52,7 +53,14 @@ export default function PhotoPreviewCard({ photo, onRemove, onEdit, onCrop }: Ph
   }
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+    <motion.div 
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.2 }}
+      className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+    >
       <div className="relative aspect-[3/4] bg-muted">
         {showComparison && photo.originalUrl ? (
           <BeforeAfterSlider
@@ -119,6 +127,6 @@ export default function PhotoPreviewCard({ photo, onRemove, onEdit, onCrop }: Ph
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

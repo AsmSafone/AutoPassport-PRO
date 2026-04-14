@@ -24,7 +24,7 @@ export function loadImageFromUrl(url: string): Promise<HTMLImageElement> {
   });
 }
 
-async function removeImageBackground(imageSource: HTMLImageElement | string): Promise<HTMLImageElement> {
+async function removeImageBackground(imageSource: HTMLImageElement | string): Promise<HTMLImageElement | null> {
   try {
     console.log('Starting background removal via API...');
 
@@ -48,33 +48,53 @@ async function removeImageBackground(imageSource: HTMLImageElement | string): Pr
     }
 
     const formData = new FormData();
-    formData.append('source_image_file', sourceBlob, 'image.png');
-    formData.append('preview', 'true'); // Using preview mode to save credits as requested
+    formData.append('image', sourceBlob, 'image.png');
 
-    const response = await fetch("https://api.slazzer.com/v2.0/remove_image_background", {
-      method: "POST",
-      headers: {
-        "API-KEY": "7c303db0068a42c6b5d73f905e4cef96"
-      },
-      body: formData
-    });
+    const PROXIES = [
+      "https://proxy.corsfix.com/?",
+      "https://corsproxy.io/?",
+      "https://thingproxy.freeboard.io/fetch/",
+      "http://cors.safothebot.workers.dev/",
+      "" // Direct fallback
+    ];
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Slazzer API Error:', errorText);
-      throw new Error(`Slazzer API failed: ${response.status} - ${errorText}`);
+    let lastError: Error | null = null;
+
+    for (const proxy of PROXIES) {
+      try {
+        console.log(`Attempting background removal via ${proxy ? 'proxy: ' + proxy : 'direct'}`);
+        const response = await fetch(`${proxy}https://api.rembg.com/rmbg`, {
+          method: "POST",
+          headers: {
+            "accept": "image/*, application/json, text/plain, */*",
+            "Referer": "https://www.rembg.com/"
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          const resultBlob = await response.blob();
+          const url = URL.createObjectURL(resultBlob);
+          const img = await loadImageFromUrl(url);
+          return img;
+        } else {
+          lastError = new Error(`Rembg API failed via ${proxy || 'direct'}: ${response.status}`);
+          console.warn(lastError.message);
+        }
+      } catch (e: any) {
+        lastError = e;
+        console.warn(`Request failed for ${proxy || 'direct'}:`, e.message);
+      }
     }
 
-    const resultBlob = await response.blob();
-    const url = URL.createObjectURL(resultBlob);
-    const img = await loadImageFromUrl(url);
-    return img;
+    if (lastError) {
+      throw lastError;
+    }
+
+    return null; // Fallback if no proxies configured
   } catch (error) {
     console.error('Background removal failed:', error);
-    if (typeof imageSource === 'string') {
-      return await loadImageFromUrl(imageSource);
-    }
-    return imageSource;
+    return null;
   }
 }
 
@@ -199,14 +219,19 @@ export async function processPassportPhoto(options: ProcessPhotoOptions): Promis
       processedSource = subjectImage;
     } else {
       const bgRemovedImg = await removeImageBackground(sourceImage);
-      processedSource = bgRemovedImg;
+      if (bgRemovedImg) {
+        processedSource = bgRemovedImg;
 
-      // Create a blob URL for caching if it's new
-      const canvas = document.createElement('canvas');
-      canvas.width = bgRemovedImg.naturalWidth;
-      canvas.height = bgRemovedImg.naturalHeight;
-      canvas.getContext('2d')?.drawImage(bgRemovedImg, 0, 0);
-      bgRemovedUrl = canvas.toDataURL('image/png');
+        // Create a blob URL for caching if it's new
+        const canvas = document.createElement('canvas');
+        canvas.width = bgRemovedImg.naturalWidth;
+        canvas.height = bgRemovedImg.naturalHeight;
+        canvas.getContext('2d')?.drawImage(bgRemovedImg, 0, 0);
+        bgRemovedUrl = canvas.toDataURL('image/png');
+      } else {
+        processedSource = sourceImage;
+        bgRemovedUrl = undefined;
+      }
     }
   }
 

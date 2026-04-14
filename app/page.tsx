@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, ChevronRight, Wand as Wand2, ArrowLeft, SlidersHorizontal, Images, LayoutTemplate, CircleCheck as CheckCircle2, ImagePlus } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import StepIndicator from '@/components/layout/StepIndicator';
@@ -145,8 +146,15 @@ export default function Home() {
       />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <AnimatePresence mode="wait">
         {step === 'upload' && (
-          <div className="animate-fade-up">
+          <motion.div 
+            key="upload"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             <HeroSection />
 
             <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -193,11 +201,18 @@ export default function Home() {
                 <FeaturesGrid />
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {step === 'process' && (
-          <div className="flex min-h-[60vh] items-center justify-center animate-fade-in">
+          <motion.div 
+            key="process"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.4 }}
+            className="flex min-h-[60vh] items-center justify-center"
+          >
             <div className="w-full max-w-md space-y-4">
               <div className="mb-6 text-center">
                 <StepIndicator currentStep="process" />
@@ -213,11 +228,17 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {step === 'download' && processor.photos.length > 0 && (
-          <div className="animate-fade-up space-y-6">
+          <motion.div 
+            key="download"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-6"
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Button variant="ghost" size="sm" onClick={handleBack} className="h-8">
@@ -258,8 +279,13 @@ export default function Home() {
                 </div>
 
                 {activeTab === 'photos' && (
-                  <div className="animate-fade-in">
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }}
+                  >
+                    <motion.div layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                      <AnimatePresence>
                       {processor.photos.map((photo) => (
                         <PhotoPreviewCard
                           key={photo.id}
@@ -273,7 +299,11 @@ export default function Home() {
                           onCrop={handleCrop}
                         />
                       ))}
-                      <button
+                      </AnimatePresence>
+                      <motion.button
+                        layout
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={handleAddMore}
                         className="group flex flex-col overflow-hidden rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/30 transition-all hover:border-blue-400 hover:bg-blue-50/60 dark:border-blue-900/30 dark:bg-blue-950/20 dark:hover:border-blue-700"
                       >
@@ -289,13 +319,17 @@ export default function Home() {
                             </span>
                           </div>
                         </div>
-                      </button>
-                    </div>
-                  </div>
+                      </motion.button>
+                    </motion.div>
+                  </motion.div>
                 )}
 
                 {activeTab === 'a4' && (
-                  <div className="animate-fade-in">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
                     <A4Preview
                       photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
                       preset={effectivePreset}
@@ -305,7 +339,7 @@ export default function Home() {
                       showGuides={showGuides}
                       gutterMm={customSpacing}
                     />
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
@@ -334,8 +368,15 @@ export default function Home() {
                   </div>
                 </button>
 
+                <AnimatePresence>
                 {showManualOverride && (
-                  <div className="animate-fade-up">
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
                     {activeEditId ? (
                       <div className="space-y-2 pb-2">
                         <div className="flex items-center justify-between px-1">
@@ -357,8 +398,9 @@ export default function Home() {
                       onReprocess={handleReprocess}
                       isProcessing={processor.status === 'cropping' || processor.status === 'enhancing'}
                     />
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
 
                 {/* 2. Export Panel */}
                 <button
@@ -381,8 +423,15 @@ export default function Home() {
                   />
                 </button>
 
+                <AnimatePresence>
                 {showExport && (
-                  <div className="animate-fade-up">
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
                     <ExportPanel
                       photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
                       preset={effectivePreset}
@@ -400,12 +449,14 @@ export default function Home() {
                       customSpacing={customSpacing}
                       setCustomSpacing={setCustomSpacing}
                     />
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </main>
 
       {showInteractiveCrop && activeEditId && (
@@ -437,21 +488,39 @@ export default function Home() {
 }
 
 function HeroSection() {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="text-center py-2">
-      <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-400">
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="text-center py-2"
+    >
+      <motion.div variants={item} className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-400 shadow-sm">
         <Wand2 className="h-3 w-3" />
         Instant Passport Photos — Zero effort
-      </div>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+      </motion.div>
+      <motion.h1 variants={item} className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
         Passport Photos,{' '}
-        <span className="text-blue-600">Simplified</span>
-      </h1>
-      <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+        <span className="text-blue-600 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">Simplified</span>
+      </motion.h1>
+      <motion.p variants={item} className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
         Upload any photo, crop to ICAO standards, enhance quality,
         and arrange on A4 for printing — all instantly in your browser.
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }
 

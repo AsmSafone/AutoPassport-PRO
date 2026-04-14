@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, ImagePlus, CircleAlert as AlertCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -83,24 +84,39 @@ export default function DropZone({ onFilesSelected, disabled }: DropZoneProps) {
 
   if (previews.length > 0) {
     return (
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-          {previews.map((preview, i) => (
-            <div
-              key={i}
-              className="relative aspect-[3/4] overflow-hidden rounded-lg border border-border bg-muted"
-            >
-              <img
-                src={preview.url}
-                alt={preview.name}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 p-1.5">
-                <p className="truncate text-[10px] text-white">{preview.name}</p>
-              </div>
-            </div>
-          ))}
-          <button
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="space-y-3"
+      >
+        <motion.div layout className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+          <AnimatePresence>
+            {previews.map((preview, i) => (
+              <motion.div
+                key={preview.url}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                className="relative aspect-[3/4] overflow-hidden rounded-lg border border-border bg-muted"
+              >
+                <img
+                  src={preview.url}
+                  alt={preview.name}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 p-1.5">
+                  <p className="truncate text-[10px] text-white">{preview.name}</p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          <motion.button
+            layout
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => inputRef.current?.click()}
             className="flex aspect-[3/4] items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/40 transition-colors hover:border-blue-500 hover:bg-blue-50/10"
           >
@@ -108,8 +124,8 @@ export default function DropZone({ onFilesSelected, disabled }: DropZoneProps) {
               <ImagePlus className="h-5 w-5 text-muted-foreground" />
               <span className="text-[10px] text-muted-foreground">Add more</span>
             </div>
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
             {previews.length} photo{previews.length !== 1 ? 's' : ''} selected
@@ -127,13 +143,15 @@ export default function DropZone({ onFilesSelected, disabled }: DropZoneProps) {
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <div
+      <motion.div
+        whileHover={{ scale: disabled ? 1 : 1.01 }}
+        whileTap={{ scale: disabled ? 1 : 0.99 }}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
@@ -180,7 +198,7 @@ export default function DropZone({ onFilesSelected, disabled }: DropZoneProps) {
             Choose Photos
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {error && (
         <div className="flex items-center gap-2 rounded-lg bg-amber-50 p-2.5 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">
