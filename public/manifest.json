@@ -1,7 +1,7 @@
 {
   "name": "AutoPassport PRO",
   "short_name": "AutoPassport",
-  "description": "Professional AI Passport Photo Generator",
+  "description": "Professional AI Passport & Stamp Photo Generator",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

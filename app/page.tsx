@@ -188,7 +188,7 @@ export default function Home() {
                   disabled={!selectedFiles.length}
                 >
                   <Wand2 className="mr-2 h-4 w-4" />
-                  Generate Passport Photos
+                  Generate Passport & Stamp Photos
                   <ChevronRight className="ml-auto h-4 w-4" />
                 </Button>
 
@@ -510,10 +510,10 @@ function HeroSection() {
     >
       <motion.div variants={item} className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-400 shadow-sm">
         <Wand2 className="h-3 w-3" />
-        Instant Passport Photos — Zero effort
+        Instant Passport & Stamp Photos — Zero effort
       </motion.div>
       <motion.h1 variants={item} className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-        Passport Photos,{' '}
+        Passport & Stamp Photos,{' '}
         <span className="text-blue-600 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">Simplified</span>
       </motion.h1>
       <motion.p variants={item} className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">

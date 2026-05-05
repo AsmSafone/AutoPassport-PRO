@@ -71,7 +71,7 @@ export default function PhotoPreviewCard({ photo, onRemove, onEdit, onCrop }: Ph
         ) : (
           <img
             src={photo.processedUrl}
-            alt="Processed passport photo"
+            alt="Processed passport or stamp photo"
             className="h-full w-full object-cover"
           />
         )}

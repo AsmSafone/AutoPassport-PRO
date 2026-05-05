@@ -8,11 +8,11 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'AutoPassport PRO — AI Passport Photo Generator',
+    default: 'AutoPassport PRO — AI Passport & Stamp Photo Generator',
     template: '%s | AutoPassport PRO'
   },
-  description: 'Generate perfect biometrically-compliant passport photos in seconds. Professional AI background removal, auto-cropping, and multi-country presets with various print layout.',
-  keywords: ['passport photo generator', 'biometric photo', 'visa photo maker', 'AI background removal', 'automatic passport photo', 'passport photo print layout', 'online passport photo maker'],
+  description: 'Generate perfect biometrically-compliant passport and stamp photos in seconds. Professional AI background removal, auto-cropping, and multi-country presets with various print layout.',
+  keywords: ['passport photo generator', 'stamp photo maker', 'biometric photo', 'visa photo maker', 'AI background removal', 'automatic passport photo', 'passport photo print layout', 'online passport photo maker'],
   authors: [{ name: 'Safone', url: 'https://safone.dev' }],
   creator: 'Safone',
   publisher: 'Safone',
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'AutoPassport PRO — AI Passport Photo Generator',
-    description: 'Professional AI-powered passport photos in seconds. Auto-crop, BG remove, and various print sheets.',
+    title: 'AutoPassport PRO — AI Passport & Stamp Photo Generator',
+    description: 'Professional AI-powered passport and stamp photos in seconds. Auto-crop, BG remove, and various print sheets.',
     url: 'https://autopassport.pro.bd',
     siteName: 'AutoPassport PRO',
     images: [
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AutoPassport PRO — AI Passport Photo Generator',
-    description: 'Generate perfect passport photos automatically with AI.',
+    title: 'AutoPassport PRO — AI Passport & Stamp Photo Generator',
+    description: 'Generate perfect passport and stamp photos automatically with AI.',
     creator: '@safone',
     images: ['/og-image.png'],
   },
