@@ -147,315 +147,315 @@ export default function Home() {
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <AnimatePresence mode="wait">
-        {step === 'upload' && (
-          <motion.div 
-            key="upload"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <HeroSection />
+          {step === 'upload' && (
+            <motion.div
+              key="upload"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <HeroSection />
 
-            <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px]">
-              <div className="space-y-5">
-                <SectionCard
-                  title="1. Choose Country Preset"
-                  icon={<span className="text-base">🌍</span>}
-                >
-                  <CountryPresetSelector
-                    selectedId={presetId}
-                    onSelect={setPresetId}
-                    customPreset={customPreset}
-                    onCustomChange={setCustomPreset}
-                  />
-                </SectionCard>
-
-                <SectionCard
-                  title="2. Upload Your Photos"
-                  icon={<Camera className="h-4 w-4 text-blue-600" />}
-                >
-                  <DropZone onFilesSelected={handleFilesSelected} />
-                </SectionCard>
-              </div>
-
-              <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-                <PreviewCard preset={effectivePreset} />
-
-                <Button
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-sm font-semibold shadow-lg shadow-blue-600/20 transition-all disabled:shadow-none"
-                  onClick={handleProcess}
-                  disabled={!selectedFiles.length}
-                >
-                  <Wand2 className="mr-2 h-4 w-4" />
-                  Generate Passport & Stamp Photos
-                  <ChevronRight className="ml-auto h-4 w-4" />
-                </Button>
-
-                {!selectedFiles.length && (
-                  <p className="text-center text-xs text-muted-foreground">
-                    Upload at least one photo to continue
-                  </p>
-                )}
-
-                <FeaturesGrid />
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {step === 'process' && (
-          <motion.div 
-            key="process"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.4 }}
-            className="flex min-h-[60vh] items-center justify-center"
-          >
-            <div className="w-full max-w-md space-y-4">
-              <div className="mb-6 text-center">
-                <StepIndicator currentStep="process" />
-              </div>
-              <ProcessingPanel
-                status={processor.status}
-                progress={processor.progress}
-                message={processor.message}
-              />
-              {processor.error && (
-                <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
-                  {processor.error}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {step === 'download' && processor.photos.length > 0 && (
-          <motion.div 
-            key="download"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-6"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={handleBack} className="h-8">
-                  <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-                  Back
-                </Button>
-                <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span className="text-xs font-semibold">
-                    {successCount} photo{successCount !== 1 ? 's' : ''} ready
-                  </span>
-                </div>
-              </div>
-              <StepIndicator currentStep="download" />
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-              <div className="space-y-4">
-                <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-sm">
-                  {[
-                    { id: 'photos', label: 'Individual Photos', icon: <Images className="h-3.5 w-3.5" /> },
-                    { id: 'a4', label: 'Print Layout', icon: <LayoutTemplate className="h-3.5 w-3.5" /> },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as 'photos' | 'a4')}
-                      className={cn(
-                        'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-medium transition-all',
-                        activeTab === tab.id
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground'
-                      )}
-                    >
-                      {tab.icon}
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {activeTab === 'photos' && (
-                  <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    exit={{ opacity: 0 }}
+              <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px]">
+                <div className="space-y-5">
+                  <SectionCard
+                    title="1. Choose Country Preset"
+                    icon={<span className="text-base">🌍</span>}
                   >
-                    <motion.div layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                      <AnimatePresence>
-                      {processor.photos.map((photo) => (
-                        <PhotoPreviewCard
-                          key={photo.id}
-                          photo={photo}
-                          onRemove={processor.removePhoto}
-                          onEdit={(id) => {
-                            setActiveEditId(id);
-                            setShowManualOverride(true);
-                            setShowExport(false);
-                          }}
-                          onCrop={handleCrop}
-                        />
-                      ))}
-                      </AnimatePresence>
-                      <motion.button
-                        layout
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleAddMore}
-                        className="group flex flex-col overflow-hidden rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/30 transition-all hover:border-blue-400 hover:bg-blue-50/60 dark:border-blue-900/30 dark:bg-blue-950/20 dark:hover:border-blue-700"
-                      >
-                        <div className="relative flex aspect-[3/4] w-full flex-col items-center justify-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 ring-4 ring-white transition-transform group-hover:scale-110 dark:bg-blue-900/50 dark:ring-blue-950">
-                            <ImagePlus className="h-6 w-6" />
-                          </div>
-                        </div>
-                        <div className="bg-white/50 p-2.5 dark:bg-transparent">
-                          <div className="flex h-[26px] items-center justify-center rounded-lg border border-blue-100 bg-blue-50/50 px-2 dark:border-blue-900/50 dark:bg-blue-900/20">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">
-                              Add More
-                            </span>
-                          </div>
-                        </div>
-                      </motion.button>
-                    </motion.div>
-                  </motion.div>
-                )}
-
-                {activeTab === 'a4' && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <A4Preview
-                      photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
-                      preset={effectivePreset}
-                      paper={paper}
-                      layout={layout}
-                      mixMultiple={mixMultiple}
-                      showGuides={showGuides}
-                      gutterMm={customSpacing}
+                    <CountryPresetSelector
+                      selectedId={presetId}
+                      onSelect={setPresetId}
+                      customPreset={customPreset}
+                      onCustomChange={setCustomPreset}
                     />
-                  </motion.div>
+                  </SectionCard>
+
+                  <SectionCard
+                    title="2. Upload Your Photos"
+                    icon={<Camera className="h-4 w-4 text-blue-600" />}
+                  >
+                    <DropZone onFilesSelected={handleFilesSelected} />
+                  </SectionCard>
+                </div>
+
+                <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+                  <PreviewCard preset={effectivePreset} />
+
+                  <Button
+                    className="group w-full h-14 bg-blue-600 hover:bg-blue-700 text-base font-bold shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] disabled:hover:scale-100 disabled:opacity-50 disabled:shadow-none"
+                    onClick={handleProcess}
+                    disabled={!selectedFiles.length}
+                  >
+                    <Wand2 className="mr-2 h-5 w-5 animate-pulse" />
+                    Generate Now!
+                    <ChevronRight className="ml-auto h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+
+                  {!selectedFiles.length && (
+                    <p className="text-center text-xs text-muted-foreground">
+                      Upload at least one photo to continue
+                    </p>
+                  )}
+
+                  <FeaturesGrid />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 'process' && (
+            <motion.div
+              key="process"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.4 }}
+              className="flex min-h-[60vh] items-center justify-center"
+            >
+              <div className="w-full max-w-md space-y-4">
+                <div className="mb-6 text-center">
+                  <StepIndicator currentStep="process" />
+                </div>
+                <ProcessingPanel
+                  status={processor.status}
+                  progress={processor.progress}
+                  message={processor.message}
+                />
+                {processor.error && (
+                  <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+                    {processor.error}
+                  </div>
                 )}
               </div>
+            </motion.div>
+          )}
 
-              <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-                {/* 1. Manual Adjustments Panel */}
-                <button
-                  onClick={() => {
-                    const newState = !showManualOverride;
-                    setShowManualOverride(newState);
-                    if (newState) setShowExport(false); // Collapse export when opening manual
-                  }}
-                  className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/50 shadow-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                    <span>Manual Adjustments</span>
+          {step === 'download' && processor.photos.length > 0 && (
+            <motion.div
+              key="download"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-6"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Button variant="ghost" size="sm" onClick={handleBack} className="h-8">
+                    <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+                    Back
+                  </Button>
+                  <div className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span className="text-xs font-semibold">
+                      {successCount} photo{successCount !== 1 ? 's' : ''} ready
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-muted-foreground">Advanced</span>
+                </div>
+                <StepIndicator currentStep="download" />
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-sm">
+                    {[
+                      { id: 'photos', label: 'Individual Photos', icon: <Images className="h-3.5 w-3.5" /> },
+                      { id: 'a4', label: 'Print Layout', icon: <LayoutTemplate className="h-3.5 w-3.5" /> },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as 'photos' | 'a4')}
+                        className={cn(
+                          'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-medium transition-all',
+                          activeTab === tab.id
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        {tab.icon}
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {activeTab === 'photos' && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <motion.div layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        <AnimatePresence>
+                          {processor.photos.map((photo) => (
+                            <PhotoPreviewCard
+                              key={photo.id}
+                              photo={photo}
+                              onRemove={processor.removePhoto}
+                              onEdit={(id) => {
+                                setActiveEditId(id);
+                                setShowManualOverride(true);
+                                setShowExport(false);
+                              }}
+                              onCrop={handleCrop}
+                            />
+                          ))}
+                        </AnimatePresence>
+                        <motion.button
+                          layout
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleAddMore}
+                          className="group flex flex-col overflow-hidden rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/30 transition-all hover:border-blue-400 hover:bg-blue-50/60 dark:border-blue-900/30 dark:bg-blue-950/20 dark:hover:border-blue-700"
+                        >
+                          <div className="relative flex aspect-[3/4] w-full flex-col items-center justify-center gap-3">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 ring-4 ring-white transition-transform group-hover:scale-110 dark:bg-blue-900/50 dark:ring-blue-950">
+                              <ImagePlus className="h-6 w-6" />
+                            </div>
+                          </div>
+                          <div className="bg-white/50 p-2.5 dark:bg-transparent">
+                            <div className="flex h-[26px] items-center justify-center rounded-lg border border-blue-100 bg-blue-50/50 px-2 dark:border-blue-900/50 dark:bg-blue-900/20">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600">
+                                Add More
+                              </span>
+                            </div>
+                          </div>
+                        </motion.button>
+                      </motion.div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'a4' && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <A4Preview
+                        photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
+                        preset={effectivePreset}
+                        paper={paper}
+                        layout={layout}
+                        mixMultiple={mixMultiple}
+                        showGuides={showGuides}
+                        gutterMm={customSpacing}
+                      />
+                    </motion.div>
+                  )}
+                </div>
+
+                <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+                  {/* 1. Manual Adjustments Panel */}
+                  <button
+                    onClick={() => {
+                      const newState = !showManualOverride;
+                      setShowManualOverride(newState);
+                      if (newState) setShowExport(false); // Collapse export when opening manual
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/50 shadow-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                      <span>Manual Adjustments</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-muted-foreground">Advanced</span>
+                      <ChevronRight
+                        className={cn(
+                          'h-4 w-4 text-muted-foreground transition-transform duration-200',
+                          showManualOverride && 'rotate-90'
+                        )}
+                      />
+                    </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {showManualOverride && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        {activeEditId ? (
+                          <div className="space-y-2 pb-2">
+                            <div className="flex items-center justify-between px-1">
+                              <span className="text-xs text-muted-foreground font-medium">
+                                Editing item #{processor.photos.findIndex((p) => p.id === activeEditId) + 1}
+                              </span>
+                              <button
+                                onClick={() => setActiveEditId(null)}
+                                className="text-xs text-blue-600 hover:text-blue-700 font-semibold"
+                              >
+                                Batch edit all
+                              </button>
+                            </div>
+                          </div>
+                        ) : null}
+                        <ManualOverridePanel
+                          adjustments={manualAdjustments}
+                          onChange={handleManualAdjustmentsChange}
+                          onReprocess={handleReprocess}
+                          isProcessing={processor.status === 'cropping' || processor.status === 'enhancing'}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* 2. Export Panel */}
+                  <button
+                    onClick={() => {
+                      const newState = !showExport;
+                      setShowExport(newState);
+                      if (newState) setShowManualOverride(false); // Collapse manual when opening export
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/50 shadow-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Wand2 className="h-4 w-4 text-blue-600" />
+                      <span>Download & Export</span>
+                    </div>
                     <ChevronRight
                       className={cn(
                         'h-4 w-4 text-muted-foreground transition-transform duration-200',
-                        showManualOverride && 'rotate-90'
+                        showExport && 'rotate-90'
                       )}
                     />
-                  </div>
-                </button>
+                  </button>
 
-                <AnimatePresence>
-                {showManualOverride && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    {activeEditId ? (
-                      <div className="space-y-2 pb-2">
-                        <div className="flex items-center justify-between px-1">
-                          <span className="text-xs text-muted-foreground font-medium">
-                            Editing item #{processor.photos.findIndex((p) => p.id === activeEditId) + 1}
-                          </span>
-                          <button
-                            onClick={() => setActiveEditId(null)}
-                            className="text-xs text-blue-600 hover:text-blue-700 font-semibold"
-                          >
-                            Batch edit all
-                          </button>
-                        </div>
-                      </div>
-                    ) : null}
-                    <ManualOverridePanel
-                      adjustments={manualAdjustments}
-                      onChange={handleManualAdjustmentsChange}
-                      onReprocess={handleReprocess}
-                      isProcessing={processor.status === 'cropping' || processor.status === 'enhancing'}
-                    />
-                  </motion.div>
-                )}
-                </AnimatePresence>
-
-                {/* 2. Export Panel */}
-                <button
-                  onClick={() => {
-                    const newState = !showExport;
-                    setShowExport(newState);
-                    if (newState) setShowManualOverride(false); // Collapse manual when opening export
-                  }}
-                  className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/50 shadow-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <Wand2 className="h-4 w-4 text-blue-600" />
-                    <span>Download & Export</span>
-                  </div>
-                  <ChevronRight
-                    className={cn(
-                      'h-4 w-4 text-muted-foreground transition-transform duration-200',
-                      showExport && 'rotate-90'
+                  <AnimatePresence>
+                    {showExport && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <ExportPanel
+                          photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
+                          preset={effectivePreset}
+                          paper={paper}
+                          onPaperChange={setPaperId}
+                          layout={layout}
+                          mixMultiple={mixMultiple}
+                          setMixMultiple={setMixMultiple}
+                          showGuides={showGuides}
+                          setShowGuides={setShowGuides}
+                          customRows={customRows}
+                          setCustomRows={setCustomRows}
+                          customCols={customCols}
+                          setCustomCols={setCustomCols}
+                          customSpacing={customSpacing}
+                          setCustomSpacing={setCustomSpacing}
+                        />
+                      </motion.div>
                     )}
-                  />
-                </button>
-
-                <AnimatePresence>
-                {showExport && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <ExportPanel
-                      photos={processor.photos.filter((p: ProcessedPhoto) => p.processedUrl)}
-                      preset={effectivePreset}
-                      paper={paper}
-                      onPaperChange={setPaperId}
-                      layout={layout}
-                      mixMultiple={mixMultiple}
-                      setMixMultiple={setMixMultiple}
-                      showGuides={showGuides}
-                      setShowGuides={setShowGuides}
-                      customRows={customRows}
-                      setCustomRows={setCustomRows}
-                      customCols={customCols}
-                      setCustomCols={setCustomCols}
-                      customSpacing={customSpacing}
-                      setCustomSpacing={setCustomSpacing}
-                    />
-                  </motion.div>
-                )}
-                </AnimatePresence>
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
         </AnimatePresence>
       </main>
 
@@ -502,7 +502,7 @@ function HeroSection() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
@@ -591,19 +591,24 @@ function FeaturesGrid() {
     { icon: '✨', title: 'Auto Enhance', desc: 'Color & sharpness' },
     { icon: '🖨️', title: '300 DPI Export', desc: 'Print-ready PDF' },
     { icon: '🔒', title: 'Privacy First', desc: '100% Client-side' },
+    { icon: '⏱️', title: 'Free Forever', desc: 'No hidden costs' },
+    { icon: '❤️', title: 'Loved by millions', desc: 'Happy users worldwide' },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2">
-      {features.map((f) => (
-        <div
+    <div className="grid grid-cols-2 gap-3 mt-6">
+      {features.map((f, i) => (
+        <motion.div
           key={f.title}
-          className="rounded-xl border border-border bg-card p-3 text-center transition-colors hover:border-blue-200 hover:bg-blue-50/20 dark:hover:bg-blue-950/10"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.1, type: 'spring', stiffness: 200, damping: 20 }}
+          className="group flex flex-col items-center justify-center rounded-2xl border border-border/50 bg-gradient-to-b from-card to-muted/20 p-4 text-center transition-all hover:border-blue-500/30 hover:bg-blue-50/50 hover:shadow-md dark:hover:bg-blue-950/20"
         >
-          <div className="text-xl">{f.icon}</div>
-          <div className="mt-1.5 text-xs font-semibold text-foreground">{f.title}</div>
-          <div className="text-[10px] text-muted-foreground leading-relaxed">{f.desc}</div>
-        </div>
+          <div className="mb-2 text-2xl transition-transform group-hover:scale-110 group-hover:-rotate-6">{f.icon}</div>
+          <div className="text-[13px] font-bold text-foreground">{f.title}</div>
+          <div className="mt-1 text-[11px] text-muted-foreground font-medium">{f.desc}</div>
+        </motion.div>
       ))}
     </div>
   );

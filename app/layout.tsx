@@ -88,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </div>
         </ThemeProvider>
+        <script src="https://api.safone.dev/static/js/sparkle.min.js" defer></script>
       </body>
     </html>
   );

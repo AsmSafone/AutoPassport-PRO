@@ -4,8 +4,6 @@ export interface CountryPreset {
   flag: string;
   widthMm: number;
   heightMm: number;
-  widthIn?: number;
-  heightIn?: number;
   dpi: number;
   headRatioMin: number;
   headRatioMax: number;
